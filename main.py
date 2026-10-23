@@ -7,16 +7,19 @@ def dijkstra(adj, src):
     dist = [float("inf")] * (V + 1)
     dist[src] = 0
 
+    S = [False] * (V + 1)
     Q = [(0, src)]
 
     while Q:
         d, u = heapq.heappop(Q)
 
-        if d > dist[u]:
+        if d > dist[u] or S[u]:
             continue
 
+        S[u] = True
+
         for v, w in adj[u]:
-            if dist[u] + w < dist[v]:
+            if not S[v] and dist[u] + w < dist[v]:
                 dist[v] = dist[u] + w
                 heapq.heappush(Q, (dist[v], v))
 
