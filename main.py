@@ -7,6 +7,7 @@ def dijkstra(adj, src, destinations=None):
     dist = [float("inf")] * (V + 1)
     dist[src] = 0
 
+    parent = [None] * (V + 1)
     S = [False] * (V + 1)
     Q = [(0, src)]
 
@@ -25,9 +26,29 @@ def dijkstra(adj, src, destinations=None):
         for v, w in adj[u]:
             if not S[v] and dist[u] + w < dist[v]:
                 dist[v] = dist[u] + w
+                parent[v] = u
                 heapq.heappush(Q, (dist[v], v))
 
-    return dist
+    return dist, parent
+
+
+def extract_path(parent, src, destination):
+    path = []
+    current = destination
+
+    while current is not None:
+        path.append(current)
+
+        if current == src:
+            break
+
+        current = parent[current]
+
+    if path[-1] != src:
+        return []
+
+    path.reverse()
+    return path
 
 
 def main():
@@ -75,15 +96,20 @@ def main():
     src = 1
     destinations = [6, 8, 9, 15, 16, 22]
 
-    dist = dijkstra(adj, src, destinations)
+    dist, parent = dijkstra(adj, src, destinations)
 
     print(f"Shortest paths from Node {src}")
 
     for destination in destinations:
-        if dist[destination] == float("inf"):
+        path = extract_path(parent, src, destination)
+
+        if not path:
             print(f"Node {destination}: Unreachable")
         else:
-            print(f"Node {destination}: Distance = " f"{dist[destination]}")
+            path_string = " -> ".join(map(str, path))
+            print(f"Node {destination}:")
+            print(f"\tDistance: {dist[destination]}")
+            print(f"\tPath: {path_string}")
 
 
 if __name__ == "__main__":
