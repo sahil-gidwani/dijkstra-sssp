@@ -1,7 +1,7 @@
 import heapq
 
 
-def dijkstra(adj, src):
+def dijkstra(adj, src, destinations=None):
     V = len(adj) - 1
 
     dist = [float("inf")] * (V + 1)
@@ -17,6 +17,10 @@ def dijkstra(adj, src):
             continue
 
         S[u] = True
+
+        if destinations is not None:
+            if all(S[x] for x in destinations):
+                break
 
         for v, w in adj[u]:
             if not S[v] and dist[u] + w < dist[v]:
@@ -69,15 +73,17 @@ def main():
         adj[v].append((u, w))
 
     src = 1
-    dist = dijkstra(adj, src)
+    destinations = [6, 8, 9, 15, 16, 22]
 
-    print(f"Shortest distances from Node {src}")
+    dist = dijkstra(adj, src, destinations)
 
-    for node in range(1, V + 1):
-        if dist[node] == float("inf"):
-            print(f"Node {node}: Unreachable")
+    print(f"Shortest paths from Node {src}")
+
+    for destination in destinations:
+        if dist[destination] == float("inf"):
+            print(f"Node {destination}: Unreachable")
         else:
-            print(f"Node {node}: Distance = {dist[node]}")
+            print(f"Node {destination}: Distance = " f"{dist[destination]}")
 
 
 if __name__ == "__main__":
